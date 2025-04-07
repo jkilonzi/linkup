@@ -1,0 +1,108 @@
+# Setting Up an Active Directory Lab from Scratch
+
+## Introduction
+Setting up an Active Directory (AD) lab is an essential skill for anyone interested in cybersecurity, penetration testing, or IT administration. This guide will walk you through setting up an AD environment in a virtualized lab using VMware or VirtualBox, Windows Server 2019/2022, and Windows 10 clients.
+
+## Prerequisites
+### Hardware Requirements
+- At least 16GB RAM (recommended for running multiple VMs)
+- Minimum 60GB free disk space
+
+### Software Requirements
+- **Hypervisor**: [VMware Workstation](https://www.vmware.com/products/workstation-pro.html) or [Oracle VirtualBox](https://www.virtualbox.org/)
+- **Windows Server 2019/2022**: Download from [Microsoft's Evaluation Center](https://www.microsoft.com/en-us/evalcenter/)
+- **Windows 10 Professional/Enterprise**: Available at [Microsoft's website](https://www.microsoft.com/software-download/windows10)
+
+## Lab Setup Overview
+Your Active Directory Lab will include:
+- **Domain Controller (DC)**: Runs Windows Server and manages AD services.
+- **Client Machines (Windows 10 PCs)**: Will be joined to the domain.
+- **Attacker Machine (Optional)**: A Kali Linux machine for testing security configurations.
+
+## Step 1: Creating the Domain Controller
+### 1.1 Installing Windows Server
+![Installing Windows Server](images/install_windows_server.png)
+1. Create a new virtual machine in VMware or VirtualBox.
+2. Name it `DC-01`.
+3. Allocate 4GB RAM and 40GB disk space.
+4. Install Windows Server 2019/2022.
+5. Set a secure Administrator password.
+
+### 1.2 Installing Active Directory Domain Services (AD DS)
+![Installing AD DS](images/install_ad_ds.png)
+1. Open **Server Manager**.
+2. Click **Manage > Add Roles and Features**.
+3. Select **Role-based installation**.
+4. Choose **Active Directory Domain Services** and proceed.
+5. Complete installation and restart the server.
+
+### 1.3 Promoting the Server to a Domain Controller
+![Promoting to Domain Controller](images/promote_to_dc.png)
+1. After restart, open **Server Manager**.
+2. Click **Notifications** and select **Promote this server to a domain controller**.
+3. Choose **Add a new forest**, enter the root domain name (e.g., `lab.local`).
+4. Configure **Domain Controller Options**:
+   - Set the **Forest Functional Level** to **Windows Server 2016/2019**.
+   - Enable **Domain Name System (DNS)**.
+   - Set a **DSRM (Directory Services Restore Mode) password**.
+5. Complete the wizard and restart the server.
+
+## Step 2: Configuring the Domain Controller
+### 2.1 Setting a Static IP Address
+![Setting Static IP](images/set_static_ip.png)
+1. Go to **Control Panel > Network and Sharing Center > Change adapter settings**.
+2. Select the network adapter, go to **Properties > IPv4** settings.
+3. Assign:
+   - **IP Address**: `192.168.1.10`
+   - **Subnet Mask**: `255.255.255.0`
+   - **Default Gateway**: `192.168.1.1`
+   - **Preferred DNS Server**: `192.168.1.10`
+
+### 2.2 Creating Organizational Units (OUs)
+![Creating OUs](images/create_ou.png)
+1. Open **Active Directory Users and Computers**.
+2. Right-click on `lab.local`, select **New > Organizational Unit**.
+3. Name the OU (e.g., `Employees`).
+
+### 2.3 Creating Users
+![Creating Users](images/create_users.png)
+1. In the **Employees** OU, right-click and select **New > User**.
+2. Create a user (e.g., `John Doe`, username: `jdoe`).
+3. Set a password and enable **Password never expires** (for testing purposes).
+
+### 2.4 Creating Security Groups
+![Creating Security Groups](images/create_groups.png)
+1. In the **Employees** OU, right-click and select **New > Group**.
+2. Name the group (e.g., `IT_Admins`).
+3. Add members (e.g., `jdoe`).
+
+## Step 3: Configuring a Windows 10 Client
+![Setting Up Windows 10 Client](images/setup_windows10.png)
+1. Create a new VM for **Windows 10**.
+2. Assign 2GB RAM and 30GB disk space.
+3. Install Windows 10 and set an Administrator password.
+
+### 3.1 Joining the Domain
+![Joining the Domain](images/join_domain.png)
+1. Open **Settings > System > About**.
+2. Click **Join a domain**.
+3. Enter `lab.local` and provide admin credentials.
+4. Restart the machine.
+
+### 3.2 Logging In as a Domain User
+![Logging In as a Domain User](images/login_domain_user.png)
+1. On the login screen, select **Other user**.
+2. Enter `lab\jdoe` and the assigned password.
+3. If login is successful, the setup is complete!
+
+## Conclusion
+You now have a fully functional Active Directory lab! This setup allows you to test security configurations, deploy Group Policies, and experiment with user management. For further exploration, consider setting up a **Kali Linux** machine to test **penetration testing techniques** against AD.
+
+---
+### References
+- [Microsoft Docs](https://docs.microsoft.com/)
+- [TCM Security AD Course](https://tcm-sec.com/)
+
+---
+If you found this guide helpful, consider sharing and contributing to my [GitHub](https://github.com/) repository!
+
